@@ -2,43 +2,43 @@
 <html lang="it">
 
 <head>
-<meta charset="UTF-8">
-<title>Gestione Note</title>
+    <meta charset="UTF-8">
+    <title>Gestione Note</title>
 </head>
 
 <body>
 
-<h1>Gestione Note</h1>
+    <h1>Gestione Note</h1>
 
-<input type="text" id="noteInput" placeholder="Scrivi una nota">
+    <input type="text" id="noteInput" placeholder="Scrivi una nota">
 
-<button onclick="addNote()">
-Aggiungissss
-</button>
+    <button onclick="addNote()">
+        Aggiungissss
+    </button>
 
-<ul id="notesList"></ul>
-
-
-<script>
-
-const API_URL = "http://localhost:3000&quot";
+    <ul id="notesList"></ul>
 
 
-async function loadNotes() {
+    <script>
 
-const response = await fetch(API_URL + "/notes");
+        const API_URL = "http://localhost:3000&quot";
 
-const notes = await response.json();
 
-const list = document.getElementById("notesList");
+        async function loadNotes() {
 
-list.innerHTML = "";
+            const response = await fetch(API_URL + "/notes");
 
-notes.forEach(note => {
+            const notes = await response.json();
 
-const li = document.createElement("li");
+            const list = document.getElementById("notesList");
 
-li.innerHTML = `
+            list.innerHTML = "";
+
+            notes.forEach(note => {
+
+                const li = document.createElement("li");
+
+                li.innerHTML = `
 ${note.text}
 
 <button onclick="deleteNote(${note.id})">
@@ -46,52 +46,52 @@ Elimina
 </button>
 `;
 
-list.appendChild(li);
-});
-}
+                list.appendChild(li);
+            });
+        }
 
 
 
-async function addNote() {
+        async function addNote() {
 
-const input = document.getElementById("noteInput");
+            const input = document.getElementById("noteInput");
 
-const text = input.value;
+            const text = input.value;
 
-await fetch(API_URL + "/notes", {
+            await fetch(API_URL + "/notes", {
 
-method: "POST",
+                method: "POST",
 
-headers: {
-"Content-Type": "application/json"
-},
+                headers: {
+                    "Content-Type": "application/json"
+                },
 
-body: JSON.stringify({
-text: text
-})
+                body: JSON.stringify({
+                    text: text
+                })
 
-});
+            });
 
-input.value = "";
+            input.value = "";
 
-loadNotes();
-}
-
-
-
-async function deleteNote(id) {
-
-await fetch(API_URL + "/notes/" + id, {
-method: "DELETE"
-});
-
-loadNotes();
-}
+            loadNotes();
+        }
 
 
-loadNotes();
 
-</script>
+        async function deleteNote(id) {
+
+            await fetch(API_URL + "/notes/" + id, {
+                method: "DELETE"
+            });
+
+            loadNotes();
+        }
+
+
+        loadNotes();
+
+    </script>
 
 </body>
 
