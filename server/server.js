@@ -1,11 +1,15 @@
 const express = require("express");
 const cors = require("cors");
 
+const fs = require("fs").promises;
+const path = require("path");
+
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+const FILE_PATH = path.join(__dirname, "notes.json");
 let notes = [
 { id: 1, text: "Prima notassssss" },
 { id: 2, text: "Seconda nota e bastaaaaaasecondo" },
