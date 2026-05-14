@@ -32,12 +32,14 @@ async function writeNotes(notes) {
     await fs.writeFile(FILE_PATH, JSON.stringify(notes, null, 2), "utf8");
 }
 
-
-// GET -> ottiene tutte le note
-app.get("/notes", (req, res) => {
-res.json(notes);
+app.get("/notes", async (req, res) => {
+    try {
+        const notes = await readNotes();
+        res.json(notes);
+    } catch (error) {
+        res.status(500).json({ error: "Errore durante la lettura delle note" });
+    }
 });
-
 
 // POST -> aggiunge una nota
 app.post("/notes", (req, res) => {
