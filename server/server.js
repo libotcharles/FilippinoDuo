@@ -41,12 +41,24 @@ app.get("/notes", async (req, res) => {
     }
 });
 
-// POST -> aggiunge una nota
-app.post("/notes", (req, res) => {
-const newNote = {
-id: notes.length + 1,
-text: req.body.text
-};
+app.post("/notes", async (req, res) => {
+    try {
+        const notes = await readNotes();
+        
+        const maxId = notes.length > 0 ? Math.max(...notes.map(n => n.id)) : 0;
+        const newNote = {
+            id: maxId + 1,
+            text: req.body.text
+        };
+
+        notes.push(newNote);
+        await writeNotes(notes);
+
+        res.json(newNote);
+    } catch (error) {
+        res.status(500).json({ error: "Errore durante il salvataggio della nota" });
+    }
+});
 
 notes.push(newNote);
 
