@@ -16,6 +16,22 @@ let notes = [
 { id: 3, text: "terza" }
 ];
 
+async function readNotes() {
+    try {
+        const data = await fs.readFile(FILE_PATH, "utf8");
+        return JSON.parse(data);
+    } catch (error) {
+        if (error.code === "ENOENT") {
+            return []; // Ritorna un array vuoto se il file non esiste ancora
+        }
+        throw error;
+    }
+}
+
+async function writeNotes(notes) {
+    await fs.writeFile(FILE_PATH, JSON.stringify(notes, null, 2), "utf8");
+}
+
 
 // GET -> ottiene tutte le note
 app.get("/notes", (req, res) => {
