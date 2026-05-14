@@ -10,11 +10,6 @@ app.use(cors());
 app.use(express.json());
 
 const FILE_PATH = path.join(__dirname, "notes.json");
-let notes = [
-{ id: 1, text: "Prima notassssss" },
-{ id: 2, text: "Seconda nota e bastaaaaaasecondo" },
-{ id: 3, text: "terza" }
-];
 
 async function readNotes() {
     try {
@@ -60,24 +55,19 @@ app.post("/notes", async (req, res) => {
     }
 });
 
-notes.push(newNote);
+app.delete("/notes/:id", async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        let notes = await readNotes();
 
-res.json(newNote);
+        notes = notes.filter(note => note.id !== id);
+        await writeNotes(notes);
+
+        res.json({ message: "Nota eliminata" });
+    } catch (error) {
+        res.status(500).json({ error: "Errore durante l'eliminazione della nota" });
+    }
 });
-
-
-// DELETE -> elimina una nota
-app.delete("/notes/:id", (req, res) => {
-
-const id = parseInt(req.params.id);
-
-notes = notes.filter(note => note.id !== id);
-
-res.json({
-message: "Nota eliminata"
-});
-});
-
 
 app.listen(3000, () => {
 console.log("Server avviato su http://localhost:3000");
