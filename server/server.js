@@ -1,0 +1,74 @@
+const express = require("express");
+const cors = require("cors");
+
+const fs = require("fs").promises;
+const path = require("path");
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+const FILE_PATH = path.join(__dirname, "notes.json");
+
+async function readNotes() {
+    try {
+        const data = await fs.readFile(FILE_PATH, "utf8");
+        return JSON.parse(data);
+    } catch (error) {
+        if (error.code === "ENOENT") {
+            return []; // Ritorna un array vuoto se il file non esiste ancora
+        }
+        throw error;
+    }
+}
+
+async function writeNotes(notes) {
+    await fs.writeFile(FILE_PATH, JSON.stringify(notes, null, 2), "utf8");
+}
+
+app.get("/notes", async (req, res) => {
+    try {
+        const notes = await readNotes();
+        res.json(notes);
+    } catch (error) {
+        res.status(500).json({ error: "Errore durante la lettura delle note" });
+    }
+});
+
+app.post("/notes", async (req, res) => {
+    try {
+        const notes = await readNotes();
+        
+        const maxId = notes.length > 0 ? Math.max(...notes.map(n => n.id)) : 0;
+        const newNote = {
+            id: maxId + 1,
+            text: req.body.text
+        };
+
+        notes.push(newNote);
+        await writeNotes(notes);
+
+        res.json(newNote);
+    } catch (error) {
+        res.status(500).json({ error: "Errore durante il salvataggio della nota" });
+    }
+});
+
+app.delete("/notes/:id", async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        let notes = await readNotes();
+
+        notes = notes.filter(note => note.id !== id);
+        await writeNotes(notes);
+
+        res.json({ message: "Nota eliminata" });
+    } catch (error) {
+        res.status(500).json({ error: "Errore durante l'eliminazione della nota" });
+    }
+});
+
+app.listen(3000, () => {
+console.log("Server avviato su http://localhost:3000");
+});
